@@ -3,6 +3,7 @@ Log python scripts using decorators
 
 ## Example
 
+```
   from logger import Logger
   
   @trace('i')
@@ -10,3 +11,4 @@ Log python scripts using decorators
     return i
     
   f(3)
+```
