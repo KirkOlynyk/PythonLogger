@@ -6,7 +6,7 @@ Log python scripts using decorators
 ```
   from logger import Logger
   
-  @trace('i')
+  @Logger.trace('i')
   def f(i):
     return i
     
