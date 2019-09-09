@@ -40,3 +40,28 @@ class.
     print("The answer is", f(3,4))
 
 ```
+
+The output indents for each level of function call
+
+```
+Entering f
+|   i: 3
+|   j: 4
+|   I am about to instantiate some_class 1 time
+|   Entering g
+|   |   i: 3
+|   Exiting g -> 9
+|   Entering some_class.__init__
+|   |   self: <__main__.some_class object at 0x000002CBF9FB8978>
+|   |   x: 9
+|   Exiting some_class.__init__ -> None
+|   Entering g
+|   |   i: 4
+|   Exiting g -> 12
+|   Entering some_class.add
+|   |   self: <__main__.some_class object at 0x000002CBF9FB8978>
+|   |   y: 12
+|   Exiting some_class.add -> 21
+Exiting f -> 21
+The answer is 21
+```
