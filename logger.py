@@ -1,4 +1,22 @@
+'''
+logger.py
+
+For logging functions/methods
+'''
+# pylint: disable=invalid-name, too-few-public-methods
+
+import inspect
+
+def isinit(a_function):
+    'determines if a function object is an __init__ for a class'
+    if hasattr(a_function, '__name__'):
+        if a_function.__name__ == '__init__':
+            if inspect.isfunction(a_function):
+                return True
+    return False
+
 class Logger:
+    'Used to log functions/methods'
     level = 0
     indent = '|   '
     @staticmethod
@@ -24,15 +42,19 @@ class Logger:
         static functions to be trace but you could have different logger
         instantiations that used methods to print to different output
         streams. I leave it to the user to make such extensions.
-        
         '''
         def function(f):
+            'wrapper function to be used to overwrite the original function/method'
             def new_f(*args, **kwds):
                 indent = Logger.indent * Logger.level
                 print('{0}Entering {1}'.format(indent, f.__qualname__))
                 Logger.level += 1
+                is_init = isinit(f)
                 for i, arg_name in enumerate(argnames):
-                    Logger.log('{0}: {1}'.format(arg_name, args[i]))
+                    if i == 0 and is_init:
+                        Logger.log('{0} at 0x{1:016X}'.format(arg_name, id(args[i])))
+                    else:
+                        Logger.log('{0}: {1}'.format(arg_name, args[i]))
                 ans = f(*args, **kwds)
                 Logger.level -= 1
                 print('{0}Exiting {1} -> {2}'.format(indent, f.__qualname__, ans))
@@ -43,28 +65,7 @@ class Logger:
 
     @staticmethod
     def log(msgs):
+        'For printing an arbitrary message'
         prequel = Logger.indent * Logger.level
         for msg in msgs.split('\n'):
             print("{0}{1}".format(prequel, msg))
-
-if __name__ == '__main__':
-    class some_class:
-        @Logger.trace('self','x')
-        def __init__(self, x):
-            self.x = x
-
-        @Logger.trace('self', 'y')
-        def add(self, y):
-            return self.x + y
-
-    @Logger.trace('i')
-    def g(i):
-        return 3 * i
-
-    @Logger.trace('i', 'j')
-    def f(i, j):
-        Logger.log("I am about to instantiate some_class {0} time".format(1))
-        a_class = some_class(g(i))
-        return a_class.add(g(j))
-
-    print("The answer is", f(3,4))
